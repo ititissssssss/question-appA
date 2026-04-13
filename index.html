@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<input id="input" />
+<button onclick="send()">送信</button>
+
+<div id="chat"></div>
+
+<script>
 async function send() {
   const input = document.getElementById("input").value;
 
@@ -11,7 +21,6 @@ async function send() {
 
   const text = await res.text();
 
-  // ❗エラーチェック（先にやる）
   if (!res.ok) {
     alert("エラー発生:\n" + text);
     return;
@@ -25,8 +34,11 @@ async function send() {
     return;
   }
 
-  document.getElementById("chat").innerHTML += `
-    <p>あなた: ${input}</p>
-    <p>AI: ${data.reply}</p>
-  `;
+  document.getElementById("chat").innerHTML +=
+    "<p>あなた: " + input + "</p>" +
+    "<p>AI: " + data.reply + "</p>";
 }
+</script>
+
+</body>
+</html>
