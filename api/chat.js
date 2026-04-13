@@ -1,53 +1,46 @@
-export default async function handler(req, res) {
-  try {
-    if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
-    }
+"use client";
+import { useState } from "react";
 
-    const { message } = req.body;
+export default function Home() {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
 
-    const prompt = `
-あなたは優秀な思考コーチです。
-ユーザーに対して「質問のみ」を返してください。
+  const sendMessage = async () => {
+    if (!input) return;
 
-ルール：
-- 1回1問
-- 多角的（定義、前提、逆、行動）
-- 徐々に深くする
+    const newMessages = [...messages, { role: "user", content: input }];
+    setMessages(newMessages);
+    setInput("");
 
-ユーザー: ${message}
-`;
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch("/api/ask", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }]
-      })
+      body: JSON.stringify({ message: input }),
     });
 
-    const text = await response.text();
+    const data = await res.json();
 
-    if (!response.ok) {
-      return res.status(500).json({
-        error: "OpenAI API Error",
-        detail: text
-      });
-    }
+    setMessages([...newMessages, { role: "assistant", content: data.reply }]);
+  };
 
-    const data = JSON.parse(text);
+  return (
+    <div style={{ padding: 20 }}>
+      <h1>AIコーチ</h1>
 
-    return res.status(200).json({
-      reply: data.choices?.[0]?.message?.content || "no response"
-    });
+      <div>
+        {messages.map((m, i) => (
+          <p key={i}>
+            <b>{m.role}:</b> {m.content}
+          </p>
+        ))}
+      </div>
 
-  } catch (err) {
-    return res.status(500).json({
-      error: err.message
-    });
-  }
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="悩みを入力"
+      />
+
+      <button onClick={sendMessage}>送信</button>
+    </div>
+  );
 }
