@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>問いアプリ</title>
 </head>
 <body>
-  <h2>思考を深める</h2>
+  <h2>思考を深めるアプリ</h2>
 
   <div id="chat"></div>
 
@@ -15,17 +16,20 @@
     async function send() {
       const input = document.getElementById("input").value;
 
-      const res = await fetch("/api", {
+      const res = await fetch("http://localhost:3000/api", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json"
+        },
         body: JSON.stringify({ message: input })
       });
 
       const data = await res.json();
 
-      document.getElementById("chat").innerHTML +=
-        "<p>あなた: " + input + "</p>" +
-        "<p>問い: " + data.reply + "</p>";
+      document.getElementById("chat").innerHTML += `
+        <p>あなた: ${input}</p>
+        <p>問い: ${data.reply}</p>
+      `;
     }
   </script>
 </body>
