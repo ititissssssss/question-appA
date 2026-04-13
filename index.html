@@ -7,3 +7,8 @@ try {
   alert("エラー発生:\n" + text);
   return;
 }
+if (!response.ok) {
+  const text = await response.text();
+  console.error(text);
+  return;
+}
