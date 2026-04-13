@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>問いアプリ</title>
+</head>
+<body>
+  <h2>思考を深める</h2>
+
+  <div id="chat"></div>
+
+  <input id="input" placeholder="悩みを書く" />
+  <button onclick="send()">送信</button>
+
+  <script>
+    async function send() {
+      const input = document.getElementById("input").value;
+
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: input })
+      });
+
+      const data = await res.json();
+
+      document.getElementById("chat").innerHTML += `
+        <p>あなた: ${input}</p>
+        <p>問い: ${data.reply}</p>
+      `;
+
+      document.getElementById("input").value = "";
+    }
+  </script>
+</body>
+</html>
