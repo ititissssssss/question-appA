@@ -1,44 +1,32 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <title>問いアプリ</title>
+</head>
 <body>
+  <h2>思考を深める</h2>
 
-<input id="input" />
-<button onclick="send()">送信</button>
+  <div id="chat"></div>
 
-<div id="chat"></div>
+  <input id="input" placeholder="悩みを書く" />
+  <button onclick="send()">送信</button>
 
-<script>
-async function send() {
-  const input = document.getElementById("input").value;
+  <script>
+    async function send() {
+      const input = document.getElementById("input").value;
 
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message: input })
-  });
+      const res = await fetch("/api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input })
+      });
 
-  const text = await res.text();
+      const data = await res.json();
 
-  if (!res.ok) {
-    alert("エラー発生:\n" + text);
-    return;
-  }
-
-  let data;
-  try {
-    data = JSON.parse(text);
-  } catch (e) {
-    alert("JSONエラー:\n" + text);
-    return;
-  }
-
-  document.getElementById("chat").innerHTML +=
-    "<p>あなた: " + input + "</p>" +
-    "<p>AI: " + data.reply + "</p>";
-}
-</script>
-
+      document.getElementById("chat").innerHTML +=
+        "<p>あなた: " + input + "</p>" +
+        "<p>問い: " + data.reply + "</p>";
+    }
+  </script>
 </body>
 </html>
