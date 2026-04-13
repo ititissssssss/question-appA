@@ -1,31 +1,9 @@
-<script>
-  async function send() {
-    const input = document.getElementById("input").value;
+const text = await res.text();
 
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: input })
-    });
-
-    // 👇ここ変更（重要）
-    const text = await res.text();
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      alert("エラー発生:\n" + text);
-      return;
-    }
-
-    document.getElementById("chat").innerHTML += `
-      <p>あなた: ${input}</p>
-      <p>問い: ${data.reply || data.error}</p>
-    `;
-
-    document.getElementById("input").value = "";
-  }
-</script>
+let data;
+try {
+  data = JSON.parse(text);
+} catch (e) {
+  alert("エラー発生:\n" + text);
+  return;
+}
