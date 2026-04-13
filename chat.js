@@ -18,17 +18,24 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
+    const text = await response.text();
 
     if (!response.ok) {
-      return res.status(500).json({ error: data });
+      return res.status(500).json({
+        error: "OpenAI API Error",
+        detail: text
+      });
     }
 
-    res.status(200).json({
-      reply: data.choices[0].message.content
+    const data = JSON.parse(text);
+
+    return res.status(200).json({
+      reply: data.choices?.[0]?.message?.content || "no response"
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({
+      error: err.message
+    });
   }
 }
