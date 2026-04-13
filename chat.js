@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   try {
     if (req.method !== "POST") {
-      return res.status(405).end();
+      return res.status(405).json({ error: "Method not allowed" });
     }
 
     const { message } = req.body;
@@ -18,22 +18,17 @@ export default async function handler(req, res) {
       })
     });
 
-    const text = await response.text();
-
-    // 👇ここ重要（ログ）
-    console.log("OpenAI response:", text);
+    const data = await response.json();
 
     if (!response.ok) {
-      return res.status(500).json({ error: text });
+      return res.status(500).json({ error: data });
     }
-
-    const data = JSON.parse(text);
 
     res.status(200).json({
       reply: data.choices[0].message.content
     });
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 }
