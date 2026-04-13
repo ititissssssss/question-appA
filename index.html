@@ -1,29 +1,32 @@
-const res = await fetch("/api/chat", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ message: input })
-});
+async function send() {
+  const input = document.getElementById("input").value;
 
-const text = await res.text();
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ message: input })
+  });
 
-// ❗エラー先にチェック
-if (!res.ok) {
-  alert("エラー発生:\n" + text);
-  return;
+  const text = await res.text();
+
+  // ❗エラーチェック（先にやる）
+  if (!res.ok) {
+    alert("エラー発生:\n" + text);
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (e) {
+    alert("JSONエラー:\n" + text);
+    return;
+  }
+
+  document.getElementById("chat").innerHTML += `
+    <p>あなた: ${input}</p>
+    <p>AI: ${data.reply}</p>
+  `;
 }
-
-let data;
-try {
-  data = JSON.parse(text);
-} catch (e) {
-  alert("JSONエラー:\n" + text);
-  return;
-}
-
-// 表示
-document.getElementById("chat").innerHTML += `
-  <p>あなた: ${input}</p>
-  <p>AI: ${data.reply}</p>
-`;
